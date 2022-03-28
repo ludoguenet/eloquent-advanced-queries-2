@@ -42,14 +42,14 @@ class OrderController extends Controller
         // );
 
         // Récupérer uniquement les colonnes utilisées en fonctions d'agrégat.
-        $orders = Order::select([
-            'id',
-            'label',
-            DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m') AS date_month"),
-            DB::raw("COUNT(orders.id) AS orders_count"),
-            DB::raw("SUM(orders.total_paid_amount) AS total_paid_amounts"),
-        ])
-        ->addSelect(['total_order_items_price' => OrderItem::selectRaw('SUM(price*quantity)')->whereColumn('order_items.order_id', 'orders.id')])
+        $orders = Order::selectRaw("
+            id,
+            label,
+            DATE_FORMAT(created_at, '%Y-%m') AS date_month,
+            COUNT(id) AS orders_count,
+            SUM(total_paid_amount) AS total_paid_amounts
+        ")
+        ->addSelect(['total_order_items_price' => OrderItem::selectRaw('SUM(price * quantity)')->whereColumn('order_items.order_id', 'orders.id')])
         ->groupBy('date_month')
         ->groupBy('label')
         ->orderByDesc('date_month')
