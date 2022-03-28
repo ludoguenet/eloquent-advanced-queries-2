@@ -68,10 +68,15 @@ class OrderController extends Controller
         //     ],
         // ]
 
+        // dd($orders);
+
         $grouped = [];
 
         $orders->map(function (Order $order) use (&$grouped) {
-            $grouped[$order->label][$order->date_month] = $order;
+            $grouped[$order->date_month][$order->label] = [
+                'orders_count' => $order->orders_count,
+                'total_paid_amounts' =>$order->total_paid_amounts
+            ];
         });
 
         dd($grouped);
